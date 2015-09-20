@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r echo=TRUE}
+
+```r
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 
@@ -22,7 +18,8 @@ filteredActivity <- filter(activity, !is.na(steps))
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 # Calculate the total number of steps taken per day
 byDate <- group_by(filteredActivity, date)
 totalStepsByDay <- summarise(byDate, steps = sum(steps))
@@ -35,20 +32,33 @@ ggplot(totalStepsByDay, aes(x = steps)) +
     ylab("Frequency")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 Mean of total number of steps by day: 
-```{r}
+
+```r
 # Calculate and report the mean and median of the total number of steps taken per day
 mean(totalStepsByDay$steps)
 ```
 
+```
+## [1] 10766.19
+```
+
 Median of total number of steps by day: 
-```{r}
+
+```r
 median(totalStepsByDay$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 # Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 byInterval <- group_by(filteredActivity, interval)
 meanOfstepsByInterval <- summarise(byInterval, meanOfSteps = mean(steps))
@@ -58,22 +68,39 @@ ggplot(meanOfstepsByInterval, aes(interval, meanOfSteps)) +
     ylab("Mean of steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
 Interval with maximum number of steps:
-```{r}
+
+```r
 # Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 meanOfstepsByInterval %>% 
     filter(meanOfSteps == max(meanOfstepsByInterval$mean)) %>%
         select(interval)
 ```
 
+```
+## Source: local data frame [1 x 1]
+## 
+##   interval
+##      (int)
+## 1      835
+```
+
 ## Imputing missing values
 Total number of missing values: 
-```{r}
+
+```r
 # Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs).
 sum(is.na(activity))
 ```
 
-```{r}
+```
+## [1] 2304
+```
+
+
+```r
 # Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 # The strategy will be the use of mean of the corresponding interval, stored in meanOfstepsByInterval.
@@ -94,20 +121,33 @@ ggplot(totalStepsByDayWithoutNA, aes(x = steps)) +
     ylab("Frequency")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 Mean of total number of steps by day (without NAs): 
-```{r}
+
+```r
 mean(totalStepsByDayWithoutNA$steps)
 ```
 
+```
+## [1] 10766.19
+```
+
 Median of total number of steps by day (without NAs): 
-```{r}
+
+```r
 median(totalStepsByDayWithoutNA$steps)
+```
+
+```
+## [1] 10766.19
 ```
 The results differ (specifically the median) from the first part of the assignment, due to the strategy selected (replacing NA with the mean value of its interval). There is a shifting to right in the median value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 # Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 activityWithoutNA <-
   mutate(activityWithoutNA, 
@@ -125,4 +165,6 @@ ggplot(meanOfstepsByIntervalWeekDay, aes(x = interval, y = meanOfSteps), col(wee
     xlab("Interval") +
     facet_grid(weekDay~.)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
